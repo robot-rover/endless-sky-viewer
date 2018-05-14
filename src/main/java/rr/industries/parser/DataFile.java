@@ -33,7 +33,6 @@ public class DataFile {
             if (str[i] == '#') {
                 while (str[i] != '\n')
                     i++;
-                i++;
             }
             if (str[i] == '\n')
                 continue;

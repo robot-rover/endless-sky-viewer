@@ -1,8 +1,18 @@
-package rr.industries;
+package rr.industries.structures;
 
 import rr.industries.parser.Tag;
 
 public class Attributes {
+    @Tag("category")
+    String category;
+    @Tag("shields")
+    double shields = 0;
+    @Tag("hull")
+    double hull = 0;
+    @Tag("drag")
+    double drag = 0;
+    @Tag("licenses")
+    Licenses licenses = new Licenses();
     @Tag("cost")
     public double cost = 0;
     @Tag("mass")
@@ -61,7 +71,7 @@ public class Attributes {
     public double cooling = 0;
     @Tag("capture attack")
     public double captureAttack = 0;
-    @Tag("capture defence")
+    @Tag("capture defense")
     public double captureDefence = 0;
     @Tag("unplunderable")
     public double unplunderable = 0;
@@ -87,7 +97,7 @@ public class Attributes {
     public double hullHeat = 0;
     @Tag("meteor capacity")
     public double meteorCapacity = 0;
-    @Tag("sidewinderCapacity")
+    @Tag("sidewinder capacity")
     public double sidewinderCapacity = 0;
     @Tag("javelin capacity")
     public double javelinCapacity = 0;
@@ -129,8 +139,8 @@ public class Attributes {
     public double cloak = 0;
     @Tag("cloaking energy")
     public double cloakingEnergy = 0;
-    @Tag("cloak fuel")
-    public double cloakFuel = 0;
+    @Tag("cloaking fuel")
+    public double cloakingFuel = 0;
     @Tag("cooling inefficiency")
     public double coolingInefficiency = 0;
     @Tag("heat dissipation")
@@ -160,6 +170,12 @@ public class Attributes {
 
     public Attributes add(Attributes other) {
         Attributes newAttributes = new Attributes();
+        newAttributes.category = this.category;
+        newAttributes.shields = this.shields + other.shields;
+        newAttributes.hull = this.hull + other.hull;
+        newAttributes.drag = this.drag + other.drag;
+        newAttributes.licenses.addAll(this.licenses);
+        newAttributes.licenses.addAll(other.licenses);
         newAttributes.cost = this.cost + other.cost;
         newAttributes.mass = this.mass + other.mass;
         newAttributes.outfitSpace = this.outfitSpace + other.outfitSpace;
@@ -223,7 +239,7 @@ public class Attributes {
         newAttributes.atmosphereScan = this.atmosphereScan + other.atmosphereScan;
         newAttributes.cloak = this.cloak + other.cloak;
         newAttributes.cloakingEnergy = this.cloakingEnergy + other.cloakingEnergy;
-        newAttributes.cloakFuel = this.cloakFuel + other.cloakFuel;
+        newAttributes.cloakingFuel = this.cloakingFuel + other.cloakingFuel;
         newAttributes.coolingInefficiency = this.coolingInefficiency + other.coolingInefficiency;
         newAttributes.heatDissipation = this.heatDissipation + other.heatDissipation;
         newAttributes.bunks = this.bunks + other.bunks;

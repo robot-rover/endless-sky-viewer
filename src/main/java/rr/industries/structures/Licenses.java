@@ -1,29 +1,21 @@
 package rr.industries.structures;
 
-import rr.industries.parser.ParseContext;
-import rr.industries.parser.Parser;
+import rr.industries.parser.DataNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Licenses implements ParseContext {
-    List<String> requiredLicenses = new ArrayList<>();
+public class Licenses extends Structure {
+    List<String> licenses = new ArrayList<>();
 
-    public Licenses(Parser parser) {
-        int[] level = new int[1];
-        level[0] = 2;
-        while (true) {
-            List<String> words = parser.getNextWords(level);
-            if (level[0] < 2)
-                break;
-            requiredLicenses.add(words.get(0));
+    void parse(DataNode node) {
+        for (DataNode child : node.children) {
+            if (child.tokens.size() > 0)
+                licenses.add(child.tokens.get(0));
         }
-        parser.backup();
     }
 
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        requiredLicenses.stream().forEach(s -> string.append("\n\t\t").append(Parser.escapeWord(s)));
-        return string.toString();
+    void addAll(Licenses other) {
+        licenses.addAll(other.licenses);
     }
 }

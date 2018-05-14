@@ -1,5 +1,7 @@
 import rr.industries.parser.DataFile;
-import rr.industries.parser.Parser;
+import rr.industries.parser.DataNode;
+import rr.industries.structures.Outfit;
+import rr.industries.structures.Ship;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,26 +21,19 @@ public class DataParser {
             System.out.println("Please provide a directory");
             System.exit(1);
         }
+        List<Outfit> outfits = new ArrayList<>();
+        List<Ship> ships = new ArrayList<>();
         for (File file : dataFolder.listFiles()) {
             DataFile dataStruct = new DataFile(file);
-            dataStruct.root.printPreview();
-            System.exit(0);
+            //dataStruct.root.printPreview();
+            for (DataNode child : dataStruct.root.children) {
+                if (child.tokens.size() >= 2 && child.token(0).equals("outfit")) {
+                    outfits.add(new Outfit(child));
+                } else if (child.tokens.size() == 2 && child.token(0).equals("ship")) { // ignore variants for now
+                    ships.add(new Ship(child));
+                }
+            }
         }
-    }
-
-    public static void addLabel(String s) {
-        int exists = topLevelLabels.indexOf(s);
-        if (exists < 0) {
-            topLevelLabels.add(s);
-        }
-
-    }
-
-    static void testParser(String line) {
-        int[] level = new int[1];
-        List<String> words = Parser.toWords(line, level);
-        if (level[0] != 0 || words.size() == 2)
-            return;
-        System.out.println(words.size() + " - " + words.toString());
+        System.exit(0);
     }
 }

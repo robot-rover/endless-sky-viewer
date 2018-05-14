@@ -5,8 +5,8 @@ import java.util.List;
 
 public class DataNode {
     DataNode parent;
-    List<DataNode> children;
-    List<String> tokens;
+    public List<DataNode> children;
+    public List<String> tokens;
 
     public DataNode() {
         children = new ArrayList<>();
@@ -18,7 +18,7 @@ public class DataNode {
         this.parent = parent;
     }
 
-    boolean isNumber(int index) {
+    public boolean isNumber(int index) {
         // Make sure this token exists and is not empty.
         if (index >= tokens.size() || tokens.get(index) == null)
             return false;
@@ -59,11 +59,7 @@ public class DataNode {
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < indent; i++)
             line.append(" ");
-        for (int i = 0; i < tokens.size(); i++) {
-            if (i > 0)
-                line.append(" ");
-            line.append(Parser.escapeWord(tokens.get(i)));
-        }
+        line.append(toString());
         System.err.println(line);
         for (DataNode child : children) {
             child.printPreview(indent + 2);
@@ -76,20 +72,15 @@ public class DataNode {
             indent = parent.printTrace() + 2;
         if (tokens.isEmpty())
             return indent;
-
-        StringBuilder line = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < indent; i++)
-            line.append(" ");
-        for (int i = 0; i < tokens.size(); i++) {
-            if (i > 0)
-                line.append(" ");
-            line.append(Parser.escapeWord(tokens.get(i)));
-        }
-        System.err.println(line);
+            builder.append(" ");
+        builder.append(toString());
+        System.err.println(builder);
         return indent;
     }
 
-    int printTrace(String message) {
+    public int printTrace(String message) {
         if (message.length() > 0) {
             System.err.println();
             System.err.println(message);
@@ -98,7 +89,7 @@ public class DataNode {
         return printTrace();
     }
 
-    double value(int index) throws NumberFormatException {
+    public double value(int index) throws NumberFormatException {
         // Check for empty strings and out-of-bounds indices.
         int i = 0;
         char[] str = tokens.get(index).toCharArray();
@@ -108,7 +99,7 @@ public class DataNode {
         }
 
         // Allowed format: "[+-]?[0-9]*[.]?[0-9]*([eE][+-]?[0-9]*)?".
-        if (str[i] != '-' && str[i] != '.' && str[i] != '+' && !(str[i] >= '0' && str[i] <= '9')) {
+        if (i < str.length && (str[i] != '-' && str[i] != '.' && str[i] != '+' && !(str[i] >= '0' && str[i] <= '9'))) {
             System.err.println("Cannot convert value \"" + tokens.get(index) + "\" to a number:");
             return 0.;
         }
@@ -120,31 +111,37 @@ public class DataNode {
 
         // Digits before the decimal point.
         long value = 0;
-        while (str[i] >= '0' && str[i] <= '9') {
+        while (i < str.length && str[i] >= '0' && str[i] <= '9') {
             value = (value * 10) + (str[i] - '0');
             i++;
         }
 
+
         // Digits after the decimal point (if any).
         long power = 0;
-        if (str[i] == '.') {
-            i++;
-            while (str[i] >= '0' && str[i] <= '9') {
-                value = (value * 10) + (str[i] - '0');
+        if (i < str.length) {
+            if (str[i] == '.') {
                 i++;
-                --power;
+                while (i < str.length && str[i] >= '0' && str[i] <= '9') {
+                    value = (value * 10) + (str[i] - '0');
+                    i++;
+                    --power;
+                }
             }
         }
 
         // Exponent.
-        if (str[i] == 'e' || str[i] == 'E') {
+        if (i < str.length && (str[i] == 'e' || str[i] == 'E')) {
             i++;
-            long exSign = (str[i] == '-') ? -1 : 1;
-            if (str[i] == '-' || str[i] == '+')
-                i++;
+            long exSign = 1;
+            if (i < str.length) {
+                exSign = (str[i] == '-') ? -1 : 1;
+                if (str[i] == '-' || str[i] == '+')
+                    i++;
+            }
 
             long exponent = 0;
-            while (str[i] >= '0' && str[i] <= '9') {
+            while (i < str.length && str[i] >= '0' && str[i] <= '9') {
                 exponent = (exponent * 10) + (str[i]++ - '0');
                 i++;
             }
@@ -156,7 +153,7 @@ public class DataNode {
         return Math.copySign(value * Math.pow(10., power), sign);
     }
 
-    String token(int index) {
+    public String token(int index) {
         return tokens.get(index);
     }
 
@@ -167,5 +164,24 @@ public class DataNode {
             node.children.add(copy(child));
         }
         return node;
+    }
+
+    public static String escapeWord(String word) {
+        if (word.contains("\""))
+            return "`" + word + "`";
+        else if (word.contains(" "))
+            return "\"" + word + "\"";
+        else return word;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < tokens.size(); i++) {
+            if (i > 0)
+                line.append(" ");
+            line.append(escapeWord(tokens.get(i)));
+        }
+        return line.toString();
     }
 }
