@@ -3,21 +3,46 @@ package rr.industries.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rr.industries.EndlessSkyViewer.LOG;
+
+/**
+ * A DataNode is a single line of a DataFile. It consists of one or more tokens,
+ * which can be interpreted either as strings or as floating point values, and
+ * it may also have "children," which may each in turn have their own children.
+ * The tokens of a node are separated by white space, with quotation marks being
+ * used to group multiple words into a single token. If the token text contains
+ * quotation marks, it should be enclosed in backticks instead.
+ */
 public class DataNode {
-    DataNode parent;
+    private DataNode parent;
     public List<DataNode> children;
     public List<String> tokens;
 
+    /**
+     * Constructs a blank DataNode
+     */
     public DataNode() {
         children = new ArrayList<>();
         tokens = new ArrayList<>(4);
     }
 
-    public DataNode(DataNode parent) {
+    /**
+     * Constructs a new DataNode with reference to its parent
+     *
+     * @param parent the parent of the new DataNode
+     */
+    @SuppressWarnings("IncompleteCopyConstructor")
+    DataNode(DataNode parent) {
         this();
         this.parent = parent;
     }
 
+    /**
+     * Checks if a the token is a valid number
+     *
+     * @param index the index of the token to check
+     * @return is the token at the index a valid number
+     */
     public boolean isNumber(int index) {
         // Make sure this token exists and is not empty.
         if (index >= tokens.size() || tokens.get(index) == null)
@@ -51,44 +76,71 @@ public class DataNode {
         return true;
     }
 
-    public void printPreview() {
-        printPreview(0);
-    }
-
-    void printPreview(int indent) {
+    private String printPreview(int indent) {
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < indent; i++)
             line.append(" ");
-        line.append(toString());
-        System.err.println(line);
+        line.append(toString()).append("\n");
         for (DataNode child : children) {
-            child.printPreview(indent + 2);
+            line.append(child.printPreview(indent + 2));
         }
+        return line.toString();
     }
 
-    int printTrace() {
-        int indent = 0;
+    /**
+     * Prints a preview of this node and all its children
+     */
+    public void printPrview() {
+        LOG.info("\n" + printPreview(0));
+    }
+
+    private NodeStackElement printTrace() {
+        NodeStackElement previous = null;
         if (parent != null)
-            indent = parent.printTrace() + 2;
+            previous = parent.printTrace();
         if (tokens.isEmpty())
-            return indent;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < indent; i++)
-            builder.append(" ");
-        builder.append(toString());
-        System.err.println(builder);
-        return indent;
+            return previous;
+        return new NodeStackElement(toString(), previous, previous == null ? 0 : previous.indent + 2);
     }
 
-    public int printTrace(String message) {
-        if (message.length() > 0) {
-            System.err.println();
-            System.err.println(message);
+    /**
+     * Prints an error message as well as the stack trace of this node up to a root node
+     *
+     * @param message The message to log
+     */
+    public void printTrace(String message) {
+        if (message == null) {
+            message = "";
+        }
+        LOG.debug(message + "\n" + printTrace());
+    }
+
+    private class NodeStackElement {
+        String element;
+        NodeStackElement stackRef;
+        int indent;
+
+        public NodeStackElement(String element, NodeStackElement stackRef, int indent) {
+            this.element = element;
+            this.stackRef = stackRef;
+            this.indent = indent;
         }
 
-        return printTrace();
+        @Override
+        public String toString() {
+            StringBuilder space = new StringBuilder();
+            for (int i = 0; i < indent; i++) space.append(" ");
+            return (stackRef == null ? "" : stackRef + "\n") + space.toString() + element;
+        }
     }
 
+    /**
+     * Gets the numerical value of a token
+     *
+     * @param index the index of the token to convert
+     * @return the numerical value
+     * @throws NumberFormatException if the token isn't a valid number
+     */
     public double value(int index) throws NumberFormatException {
         // Check for empty strings and out-of-bounds indices.
         int i = 0;
@@ -153,11 +205,17 @@ public class DataNode {
         return Math.copySign(value * Math.pow(10., power), sign);
     }
 
+    /**
+     * returns a token
+     *
+     * @param index the index of the token
+     * @return the token
+     */
     public String token(int index) {
         return tokens.get(index);
     }
 
-    static DataNode copy(DataNode other) {
+    private static DataNode copy(DataNode other) {
         DataNode node = new DataNode(other.parent);
         node.tokens.addAll(other.tokens);
         for (DataNode child : other.children) {
@@ -166,6 +224,12 @@ public class DataNode {
         return node;
     }
 
+    /**
+     * Escapes a phrase so that it is valid to place inside a token
+     *
+     * @param word the phrase to escape
+     * @return the phrase, correctly escaped
+     */
     public static String escapeWord(String word) {
         if (word.contains("\""))
             return "`" + word + "`";

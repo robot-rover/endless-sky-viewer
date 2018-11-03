@@ -1,6 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    }
+}
+
 group 'rr.industries'
 version '0.0.1'
 
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
@@ -9,6 +19,19 @@ repositories {
     mavenCentral()
 }
 
+shadowJar {
+    baseName = 'endless-sky-viewer'
+    classifier = null
+    version = null
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'rr.industries.EndlessSkyViewer'
+    }
+}
+
 dependencies {
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
