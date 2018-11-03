@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rr.industries.structures.Ship;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 /**
@@ -109,6 +110,10 @@ public class EndlessSkyViewer extends Application {
 
 
     public static void main(String args[]) {
+        if (args.length < 1) {
+            System.err.println("Please Specify the Game Directory");
+        }
+        GameData.gameDataDirectory = new File(args[0]);
         launch(args);
     }
 

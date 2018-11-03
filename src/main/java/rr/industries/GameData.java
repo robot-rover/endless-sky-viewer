@@ -28,7 +28,7 @@ public final class GameData {
     static List<Outfit> outfits = new ArrayList<>();
     static List<Ship> ships = new ArrayList<>();
     static HashMap<String, Image> sprites = new HashMap<>();
-    private static final File gameDataDirectory = new File("/home/robot_rover/endless-sky/");
+    static File gameDataDirectory;
 
     /**
      * Get the base directory for Endless Sky
@@ -124,6 +124,10 @@ public final class GameData {
      * @param progressCallback a callback to monitor loading progress
      */
     public static void loadGameData(Consumer<Double> progressCallback) {
+        if (!getGameDirectory().exists() || !gameDataDirectory.isDirectory()) {
+            LOG.error("Game Directory {} is Not Valid!", getGameDirectory().getAbsolutePath());
+            System.exit(1);
+        }
         // Load Ship Sprites
         File baseSpriteDir = getGameDirectory("images");
         recursiveLoadSprite(getGameDirectory("images/outfit"), baseSpriteDir, progressCallback, 0, 0.3);
@@ -162,6 +166,10 @@ public final class GameData {
 
     private static void recursiveLoadSprite(File dir, File baseSpriteDir, Consumer<Double> progressCallback, double startProg, double endProg) {
         File[] spriteFiles = dir.listFiles(file -> !file.isDirectory());
+        if (spriteFiles == null) {
+            LOG.error("Cannot load {}, is game directory valid?", dir.getAbsolutePath());
+            System.exit(-1);
+        }
         double step = (endProg - startProg) / spriteFiles.length;
         for (int i = 0; i < spriteFiles.length; i++) {
             progressCallback.accept(startProg + i * step);
