@@ -5,12 +5,10 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -31,11 +29,35 @@ public class EndlessSkyViewer extends Application {
     private Stage primaryStage;
     private Stage progressNotifier;
     private TabPane tabPane;
+    private BorderPane root;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        root = new BorderPane();
+        Scene primaryScene = new Scene(root);
+        primaryStage.setScene(primaryScene);
+        primaryStage.setWidth(900);
+        primaryStage.setHeight(500);
+        primaryStage.setTitle("Endless Sky Viewer");
+        primaryStage.show();
+
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Endless Sky Viewer");
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Endless Sky's install directory");
+        GameData.gameDataDirectory = directoryChooser.showDialog(primaryStage);
+
+        if(GameData.gameDataDirectory == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("No GameData Folder");
+            alert.setHeaderText("You did not select a GameData folder");
+            alert.setContentText("Please launch endless-sky-viewer again and select the install directory of the game. It should have 3 folders in it named 'images', 'sounds' and 'data'.");
+
+            alert.showAndWait();
+            System.exit(-1);
+        }
+
+
         progressNotifier = new Stage();
         Label loadingFile = new Label("Loading GameData");
         ProgressBar progressBar = new ProgressBar(0.0);
@@ -68,15 +90,11 @@ public class EndlessSkyViewer extends Application {
         shipPicker.setContent(shipPickerRoot);
         tabPane.getTabs().add(shipPicker);
 
-        BorderPane root = new BorderPane();
+
         root.setCenter(tabPane);
 
-        Scene primaryScene = new Scene(root);
-        primaryStage.setScene(primaryScene);
-        primaryStage.setWidth(900);
-        primaryStage.setHeight(500);
-        primaryStage.show();
-        primaryStage.setMaximized(true);
+
+
         progressNotifier.close();
     }
 
@@ -110,10 +128,6 @@ public class EndlessSkyViewer extends Application {
 
 
     public static void main(String args[]) {
-        if (args.length < 1) {
-            System.err.println("Please Specify the Game Directory");
-        }
-        GameData.gameDataDirectory = new File(args[0]);
         launch(args);
     }
 
