@@ -186,6 +186,8 @@ public final class GameData {
                         continue;
                     }
                 }
+                // For windows compatibility
+                subPath = subPath.replace(File.separatorChar, '/');
                 sprites.put(subPath, sprite);
             } catch (IOException e) {
                 e.printStackTrace();
