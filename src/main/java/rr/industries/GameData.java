@@ -118,6 +118,22 @@ public final class GameData {
         return outfits;
     }
 
+    private static List<File> recursivelyListFiles(File directory) {
+        List<File> list = new ArrayList<>();
+        recursivelyListFilesInternal(list, directory);
+        return list;
+    }
+
+    private static void recursivelyListFilesInternal(List<File> list, File dir) {
+        for(File file : dir.listFiles()) {
+            if(file.isFile()) {
+                list.add(file);
+            } else if(file.isDirectory()) {
+                recursivelyListFilesInternal(list, file);
+            }
+        }
+    }
+
     /**
      * Begins loading all data from the game
      *
@@ -135,7 +151,7 @@ public final class GameData {
         recursiveLoadSprite(getGameDirectory("images/thumbnail"), baseSpriteDir, progressCallback, 0.6, 0.9);
 
         // Load Game Textual Data Files
-        for (File file : getGameDirectory("data").listFiles()) {
+        for (File file : recursivelyListFiles(getGameDirectory("data"))) {
             if (file.getName().equals("deprecated outfits.txt"))
                 continue;
             try {

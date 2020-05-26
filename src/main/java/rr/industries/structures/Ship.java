@@ -256,7 +256,7 @@ public class Ship {
                 OutfitPlaceholder placeholder = (OutfitPlaceholder) outfit;
                 Outfit realOutfit = GameData.getOutfit(placeholder.getPointerName());
                 if (realOutfit == null) {
-                    LOG.warn("Unable to load outfit \"" + placeholder.getPointerName() + "\"");
+                    LOG.warn("Unable to load outfit \"{}\" for ship {}", placeholder.getPointerName(), this.modelName);
                 } else {
                     outfits.set(i, realOutfit);
                 }
