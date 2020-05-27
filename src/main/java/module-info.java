@@ -7,4 +7,5 @@ module endless.sky.viewer {
     requires com.google.gson;
     exports rr.industries;
     exports rr.industries.structures;
+    requires java.logging;
 }

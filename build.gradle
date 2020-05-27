@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'rr.industries'
-version '0.0.2'
+version '0.0.3'
 
 sourceCompatibility = 1.14
 
@@ -47,8 +47,14 @@ jlink {
         installerOptions = ['--win-menu', '--win-shortcut']
     }
     mergedModule {
-        requires 'java.naming'
-        requires 'java.xml'
+        requires "java.management"
+        requires "java.naming"
+        requires "java.logging"
+        requires "java.sql"
+        requires "java.xml"
+        requires "java.desktop"
+        requires "java.datatransfer"
+        requires "jdk.unsupported"
     }
 }
 

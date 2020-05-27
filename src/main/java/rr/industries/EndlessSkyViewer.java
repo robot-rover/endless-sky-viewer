@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 public class EndlessSkyViewer extends Application {
 
     public static final String APP_NAME = "endless-sky-viewer";
-    public static final String APP_VERSION = "0.0.2";
+    public static final String APP_VERSION = "0.0.3";
     public static final String APP_AUTHOR = "robot_rover";
 
     public static final Logger LOG = LoggerFactory.getLogger(EndlessSkyViewer.class);
