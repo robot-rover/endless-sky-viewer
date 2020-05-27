@@ -73,5 +73,6 @@ public class OutfitEditorRoot extends HBox {
 
         shipPane.redrawAttributes(ship.getAppliedAttributes());
         shipManifestPane.setShip(ship);
+        shipManifestPane.shadeItem(outfit);
     }
 }

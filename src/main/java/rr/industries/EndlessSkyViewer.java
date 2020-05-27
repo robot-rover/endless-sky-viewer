@@ -1,5 +1,8 @@
 package rr.industries;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,10 +18,14 @@ import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rr.industries.structures.Config;
 import rr.industries.structures.Ship;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -37,6 +44,8 @@ public class EndlessSkyViewer extends Application {
 
     public static final Logger LOG = LoggerFactory.getLogger(EndlessSkyViewer.class);
 
+    private static final String stylesheet = "styling.css";
+
     private Stage primaryStage;
     private Scene primaryScene;
     private TabPane tabPane;
@@ -44,6 +53,7 @@ public class EndlessSkyViewer extends Application {
     private ShipPickerRoot shipPickerRoot;
     private Tab shipPicker;
 
+    private Config config;
     private GameData gameData;
 
     private static Path getConfigFile() {
@@ -51,37 +61,43 @@ public class EndlessSkyViewer extends Application {
         return Path.of(appDirs.getUserConfigDir(APP_NAME, APP_VERSION, APP_AUTHOR), "config.txt");
     }
 
-    private static Optional<String> readConfig() {
-        Path config = getConfigFile();
-        if(Files.exists(config)) {
-            try {
-                String gameDataPath = Files.readString(config);
-                LOG.debug("Read Gamedata Location from {} -> {}", config, gameDataPath);
-                return Optional.of(gameDataPath);
-            } catch (IOException ex) {
-                LOG.warn("Unable to read config file: " + config, ex);
-                return Optional.empty();
+    private static Config readConfig() {
+        Path configPath = getConfigFile();
+        if(Files.exists(configPath)) {
+            try (BufferedReader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)){
+                LOG.debug("Reading config from {}", configPath);
+                Config config = new Gson().fromJson(reader, Config.class);
+                if(config != null) {
+                    LOG.debug("Read Gamedata Location {}", config.gameDataPath);
+                    return config;
+                } else {
+                    LOG.warn("Error reading config, Gson returned null");
+                }
+            } catch (IOException | JsonSyntaxException | JsonIOException ex) {
+                LOG.warn("Unable to read config file: " + configPath, ex);
             }
         }
-        return Optional.empty();
+        return new Config();
     }
 
-    private static void writeConfig(File dataDir) {
-        Path config = getConfigFile();
+    private static void writeConfig(Config config) {
+        Path configPath = getConfigFile();
         try {
-            Files.createDirectories(config.getParent());
-            Files.writeString(config, dataDir.getCanonicalPath(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-            LOG.debug("Wrote Gamedata Location to {} -> {}", config, dataDir);
+            Files.createDirectories(configPath.getParent());
+            LOG.debug("Writing Config to {}", configPath);
+            try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
+                new Gson().toJson(config, writer);
+            }
         } catch (IOException ex) {
-            LOG.warn("Unable to write config file " + config, ex);
+            LOG.warn("Unable to write config file " + configPath, ex);
         }
     }
-
 
     @Override
     public void start(Stage primaryStage) {
         root = new BorderPane();
         primaryScene = new Scene(root);
+        primaryScene.getStylesheets().add(stylesheet);
         primaryStage.setScene(primaryScene);
         primaryStage.setWidth(900);
         primaryStage.setHeight(500);
@@ -106,9 +122,11 @@ public class EndlessSkyViewer extends Application {
         Menu fileMenu = new Menu("File");
         MenuItem openGameDir = new MenuItem("Change GameData");
         openGameDir.setOnAction((ActionEvent ae) -> queryGameDataLocation().ifPresent(this::loadGameData));
+        MenuItem darkMode = new MenuItem("Dark Mode");
+        darkMode.setOnAction((ActionEvent ae) -> darkMode(!config.darkMode));
         MenuItem exit = new MenuItem("Exit");
         exit.setOnAction((ActionEvent ae) -> System.exit(0));
-        fileMenu.getItems().addAll(openGameDir, exit);
+        fileMenu.getItems().addAll(openGameDir, darkMode, exit);
 
         Menu shipMenu = new Menu("Ship");
         MenuItem todo = new MenuItem("Coming Soon...");
@@ -122,7 +140,20 @@ public class EndlessSkyViewer extends Application {
         menuBar.getMenus().addAll(fileMenu, shipMenu, helpMenu);
         root.setTop(menuBar);
 
-        readConfig().map(File::new).map(GameData::new).ifPresent(this::loadGameData);
+        config = readConfig();
+        darkMode(config.darkMode);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> writeConfig(config)));
+        Optional.ofNullable(config.gameDataPath).map(File::new).map(GameData::new).ifPresent(this::loadGameData);
+    }
+
+    private static final String darkModeStylesheet = "dark_mode.css";
+    private void darkMode(boolean enable) {
+        config.darkMode = enable;
+        if(enable) {
+            primaryScene.getStylesheets().add(darkModeStylesheet);
+        } else {
+            primaryScene.getStylesheets().remove(darkModeStylesheet);
+        }
     }
 
     private Optional<GameData> queryGameDataLocation() {
@@ -131,7 +162,8 @@ public class EndlessSkyViewer extends Application {
         File gameDataDirectory = directoryChooser.showDialog(primaryStage);
 
         if (gameDataDirectory != null) {
-            writeConfig(gameDataDirectory);
+            config.gameDataPath = gameDataDirectory.getAbsolutePath();
+            writeConfig(config);
         }
 
         return Optional.ofNullable(gameDataDirectory).map(GameData::new);

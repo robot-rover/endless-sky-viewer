@@ -1,0 +1,11 @@
+#manifest-shade {
+    -fx-background-color: lightGrey;
+}
+
+#manifest-highlight {
+    -fx-background-color: yellow;
+}
+
+#manifest-warn {
+    -fx-background-color: red;
+}

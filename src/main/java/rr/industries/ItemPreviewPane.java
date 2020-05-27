@@ -115,8 +115,6 @@ public abstract class ItemPreviewPane extends ScrollPane {
     }
 
     protected static final DecimalFormat attributeFormat = new DecimalFormat("#.##");
-    protected static final Background greyBackground = new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY));
-    protected static final Background redBackground = new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY));
 
     protected void setAttributes(VBox list, Iterator<Map.Entry<String, Double>> attributes) {
         setAttributes(list, attributes, false);
@@ -138,9 +136,9 @@ public abstract class ItemPreviewPane extends ScrollPane {
             item.getChildren().add(atValue);
             HBox.setHgrow(spacer, Priority.ALWAYS);
             if ((1 & shade++) == 0)
-                item.setBackground(greyBackground);
+                item.setId("manifest-shade");
             if (negative && colorNegatives)
-                item.setBackground(redBackground);
+                item.setId("manifest-warn");
             list.getChildren().add(item);
         }
     }

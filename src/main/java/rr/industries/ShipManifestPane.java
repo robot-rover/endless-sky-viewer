@@ -24,7 +24,6 @@ public class ShipManifestPane extends ScrollPane {
     static final double paneWidth = 300;
     static final double padding = 10;
 
-    private static final Background greyBackground = new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY));
     VBox root;
     ManifestCategory[] categoryList;
 
@@ -58,19 +57,20 @@ public class ShipManifestPane extends ScrollPane {
     private ManifestItem shaded;
 
     public void shadeItem(Outfit outfit) {
-        if (shaded != null)
-            if (shaded.shade) {
-                shaded.setBackground(greyBackground);
+        if (shaded != null) {
+            if(shaded.shade) {
+                shaded.setId("manifest-shade");
             } else {
-                shaded.setBackground(null);
+                shaded.setId(null);
             }
+        }
         shaded = null;
         Category outfitCategory = outfit.getCategory();
         ManifestCategory category = categoryList[outfitCategory.ordinal()];
         Optional<ManifestItem> newShade = category.listItems.stream().filter(v -> v.outfit == outfit).findAny();
         if (newShade.isPresent()) {
             shaded = newShade.get();
-            shaded.setBackground(highlight);
+            shaded.setId("manifest-highlight");
         }
     }
 
@@ -156,7 +156,7 @@ public class ShipManifestPane extends ScrollPane {
             this.getChildren().add(atValue);
             HBox.setHgrow(spacer, Priority.ALWAYS);
             if (shade)
-                this.setBackground(greyBackground);
+                this.setId("manifest-shade");
             if (selectOutfit != null) {
                 this.setOnMouseClicked(v -> selectOutfit.accept(outfit));
             }
