@@ -5,6 +5,8 @@ plugins {
     id "org.beryx.jlink" version "2.19.0"
 }
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 group 'rr.industries'
 version '0.0.3'
 
@@ -17,6 +19,7 @@ repositories {
 ext {
     mainModule = 'endless.sky.viewer'
     mainClass = 'rr.industries.EndlessSkyViewer'
+    isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 }
 
 application {
@@ -44,7 +47,7 @@ jlink {
     imageName = 'endless-sky-viewer'
     jpackage {
         installerName = 'endless-sky-viewer'
-        installerOptions = ['--win-menu', '--win-shortcut']
+        installerOptions = project.isWindows ? ['--win-menu', '--win-shortcut'] : []
     }
     mergedModule {
         requires "java.management"
