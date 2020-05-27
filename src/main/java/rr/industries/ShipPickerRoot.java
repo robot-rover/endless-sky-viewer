@@ -17,18 +17,10 @@ import java.util.function.Consumer;
 public class ShipPickerRoot extends HBox {
     ShipListPane shipList;
     ShipPreviewPane shipPane;
+    ListNavBar navBar;
 
     public ShipPickerRoot(Consumer<ShipListItem> openVariants, Consumer<Ship> editShip) {
-        List<ShipListItem> shipListSource = new ArrayList<>();
-        for (Ship ship : GameData.getShips()) {
-            if (ship.getVariantName() != null || ship.getSprite() == null)
-                continue;
-            shipListSource.add(new ShipListItem(ship));
-        }
-
-        shipList = new ShipListPane(shipListSource);
-
-        ListNavBar navBar = new ListNavBar(shipList::scrollToCategory) {{
+        navBar = new ListNavBar(null) {{
             createButton(Category.TRANSPORT);
             createSpacer();
             createButton("Heavy", Category.HEAVY_FREIGHTER);
@@ -48,6 +40,7 @@ public class ShipPickerRoot extends HBox {
 
         this.getChildren().add(navBar);
 
+        shipList = new ShipListPane();
         this.getChildren().add(shipList);
 
         shipPane = new ShipPreviewPane(openVariants, editShip);
@@ -55,5 +48,18 @@ public class ShipPickerRoot extends HBox {
         this.getChildren().add(shipPane);
 
         HBox.setHgrow(shipList, Priority.ALWAYS);
+    }
+
+    public void load(GameData gameData) {
+        List<ShipListItem> shipListSource = new ArrayList<>();
+        for (Ship ship : gameData.getShips()) {
+            if (ship.getVariantName() != null || ship.getSprite() == null)
+                continue;
+            shipListSource.add(new ShipListItem(ship, gameData));
+        }
+
+        shipList.load(shipListSource);
+
+        navBar.setScrollTargetCallback(shipList::scrollToCategory);
     }
 }

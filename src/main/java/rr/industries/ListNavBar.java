@@ -25,6 +25,10 @@ public abstract class ListNavBar extends ScrollPane {
     VBox root;
     Consumer<Category> scrollTargetCallback;
 
+    public void setScrollTargetCallback(Consumer<Category> scrollTargetCallback) {
+        this.scrollTargetCallback = scrollTargetCallback;
+    }
+
     /**
      * Creates a new ListNavBar
      *
@@ -55,7 +59,7 @@ public abstract class ListNavBar extends ScrollPane {
         //buttonRoot.setRotate(90);
         root.getChildren().add(buttonRoot);
         final Category temp = category;
-        label.setOnAction(event -> scrollTargetCallback.accept(temp));
+        label.setOnAction(event -> {if(scrollTargetCallback != null) {scrollTargetCallback.accept(temp);}});
     }
 
     void createButton(Category category) {

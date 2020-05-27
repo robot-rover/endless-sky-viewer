@@ -28,22 +28,22 @@ class ShipListItem extends ListItem {
     private boolean applyOutfits;
     Consumer<ShipListItem> clickedOnCallback;
 
-    ShipListItem(Ship ship, boolean isVariant, boolean applyOutfits) {
+    ShipListItem(Ship ship, GameData gameData, boolean isVariant, boolean applyOutfits) {
         this.baseShip = ship;
         this.applyOutfits = applyOutfits;
         if (!isVariant)
-            this.variants = GameData.getShipVariants(ship.getModelName());
+            this.variants = gameData.getShipVariants(ship.getModelName());
         else
             this.variants = new ArrayList<>(0);
         setup();
     }
 
-    public ShipListItem(Ship ship, boolean isVariant) {
-        this(ship, isVariant, false);
+    public ShipListItem(Ship ship, GameData gameData, boolean isVariant) {
+        this(ship, gameData, isVariant, false);
     }
 
-    public ShipListItem(Ship ship) {
-        this(ship, false);
+    public ShipListItem(Ship ship, GameData gameData) {
+        this(ship, gameData, false);
     }
 
     VBox getNode() {

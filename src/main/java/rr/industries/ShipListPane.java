@@ -28,11 +28,20 @@ public class ShipListPane extends ScrollPane {
     Map<Category, HBox> headers;
     Consumer<ShipListItem> callbackFunc;
     ShipListItem selected;
+    VBox categoryRoot;
 
-    public ShipListPane(List<ShipListItem> sourceList) {
+    public ShipListPane() {
+        setMinWidth(280);
+        setFitToWidth(true);
+        categoryRoot = new VBox();
+        categoryRoot.setFillWidth(true);
+        setContent(categoryRoot);
+    }
+
+    public void load(List<ShipListItem> sourceList) {
         headers = new HashMap<>();
-        this.sourceList = sourceList;
         sourceTree = new HashMap<>();
+        categoryRoot.getChildren().clear();
         for (int i = Category.TRANSPORT.ordinal(); i < Category.values().length; i++) {
             sourceTree.put(Category.values()[i], new ArrayList<>());
         }
@@ -45,12 +54,6 @@ public class ShipListPane extends ScrollPane {
             sourceTree.get(category).add(shipItem);
         }
         sourceTree.values().removeIf(shipListItems -> shipListItems.size() == 0);
-
-        setMinWidth(280);
-        setFitToWidth(true);
-        VBox categoryRoot = new VBox();
-        categoryRoot.setFillWidth(true);
-        setContent(categoryRoot);
 
         for (int i = Category.TRANSPORT.ordinal(); i < Category.values().length; i++) {
             List<ShipListItem> categorySource = sourceTree.get(Category.values()[i]);

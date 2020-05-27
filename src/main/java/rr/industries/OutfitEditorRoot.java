@@ -19,12 +19,12 @@ public class OutfitEditorRoot extends HBox {
     OutfitPreviewPane outfitPreview;
     Ship ship;
 
-    public OutfitEditorRoot(Ship ship) {
+    public OutfitEditorRoot(Ship ship, GameData gameData) {
         this.ship = ship;
 
         outfitPreview = new OutfitPreviewPane(this::modifyOutfit);
 
-        outfitListPane = new OutfitListPane(GameData.getOutfits(), this::selectOutfit);
+        outfitListPane = new OutfitListPane(gameData.getOutfits(), this::selectOutfit);
 
         ListNavBar categoryNavBar = new ListNavBar(outfitListPane::setCategory) {{
             for (int i = 0; i < Category.UNKNOWN.ordinal(); i++) {
@@ -44,7 +44,7 @@ public class OutfitEditorRoot extends HBox {
         this.getChildren().add(shipPane);
 
         HBox.setHgrow(outfitListPane, Priority.ALWAYS);
-        setShip(new ShipListItem(ship, false, true));
+        setShip(new ShipListItem(ship, gameData, false, true));
     }
 
     public void selectOutfit(OutfitListItem outfit) {

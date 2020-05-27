@@ -19,15 +19,16 @@ public class VariantPickerRoot extends HBox {
     ShipPreviewPane variantPane;
     ShipManifestPane outfitListPane;
 
-    public VariantPickerRoot(ShipListItem shipItem, Consumer<Ship> editShip) {
+    public VariantPickerRoot(ShipListItem shipItem, Consumer<Ship> editShip, GameData gameData) {
         List<ShipListItem> variantsListSource = new ArrayList<>();
-        variantsListSource.add(new ShipListItem(shipItem.getBaseShip()));
+        variantsListSource.add(new ShipListItem(shipItem.getBaseShip(), gameData));
 
         for (Ship ship : shipItem.getVariants()) {
-            variantsListSource.add(new ShipListItem(ship, true));
+            variantsListSource.add(new ShipListItem(ship, gameData, true));
         }
 
-        variantList = new ShipListPane(variantsListSource);
+        variantList = new ShipListPane();
+        variantList.load(variantsListSource);
 
         this.getChildren().add(variantList);
 

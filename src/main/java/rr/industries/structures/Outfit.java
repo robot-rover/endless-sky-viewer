@@ -33,12 +33,15 @@ public class Outfit {
     private Category category;
     private Map<String, Double> attributes = new HashMap<>();
 
+    private GameData gameData;
+
     /**
      * Creates a new outfit
      *
      * @param node the source DataNode
      */
-    public Outfit(DataNode node) {
+    public Outfit(DataNode node, GameData gameData) {
+        this.gameData = gameData;
         if (node.tokens.size() >= 2) {
             name = node.token(1);
             plural = name + 's';
@@ -144,7 +147,7 @@ public class Outfit {
     private void loadThumbnail(DataNode node) {
         if (node.tokens.size() < 2)
             return;
-        thumbnail = GameData.getSprite(node.token(1));
+        thumbnail = gameData.getSprite(node.token(1));
     }
 
     /**

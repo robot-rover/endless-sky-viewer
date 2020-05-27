@@ -1,5 +1,6 @@
 package rr.industries.structures;
 
+import rr.industries.GameData;
 import rr.industries.parser.DataNode;
 
 /**
@@ -10,8 +11,8 @@ import rr.industries.parser.DataNode;
 public class OutfitPlaceholder extends Outfit {
     private String pointerName;
 
-    public OutfitPlaceholder(String pointerName) {
-        super(new DataNode());
+    public OutfitPlaceholder(String pointerName, GameData gameData) {
+        super(new DataNode(), gameData);
         this.pointerName = pointerName;
     }
 

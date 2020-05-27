@@ -39,12 +39,15 @@ public class Ship {
     private double fighterBays;
     private boolean redoBays;
 
+    private GameData gameData;
+
     /**
      * Creates a new ship
      *
      * @param node the source DataNode
      */
-    public Ship(DataNode node) {
+    public Ship(DataNode node, GameData gameData) {
+        this.gameData = gameData;
         if (node.tokens.size() >= 2) {
             modelName = node.token(1);
             pluralModelName = modelName + 's';
@@ -81,9 +84,9 @@ public class Ship {
                 //todo: swizzles
             } else if (key.equals("attributes") || add) {
                 if (!add)
-                    baseAttributes = new Outfit(child);
+                    baseAttributes = new Outfit(child, gameData);
                 else
-                    addAttributes = new Outfit(child);
+                    addAttributes = new Outfit(child, gameData);
             } else if (key.equals("engine") && size >= 3) {
                 //todo: engine hardpoint loading
             } else if (key.equals("gun") || key.equals("turret")) {
@@ -110,7 +113,7 @@ public class Ship {
                 outfits = new ArrayList<>();
                 for (DataNode grand : child.children) {
                     int count = (grand.tokens.size() >= 2) ? (int) grand.value(1) : 1;
-                    Outfit outfit = GameData.getOutfitOrPointer(grand.token(0));
+                    Outfit outfit = gameData.getOutfitOrPointer(grand.token(0));
                     for (int i = 0; i < count; i++) {
                         outfits.add(outfit);
                     }
@@ -212,7 +215,7 @@ public class Ship {
     public void finalLoad() {
         // load data from base ship
         if (variantName != null) {
-            Ship base = GameData.getShipBase(modelName);
+            Ship base = gameData.getShipBase(modelName);
             if (base != null) {
                 if (sprite == null) {
                     sprite = base.sprite;
@@ -254,7 +257,7 @@ public class Ship {
             Outfit outfit = outfits.get(i);
             if (outfit.getClass().equals(OutfitPlaceholder.class)) {
                 OutfitPlaceholder placeholder = (OutfitPlaceholder) outfit;
-                Outfit realOutfit = GameData.getOutfit(placeholder.getPointerName());
+                Outfit realOutfit = gameData.getOutfit(placeholder.getPointerName());
                 if (realOutfit == null) {
                     LOG.warn("Unable to load outfit \"{}\" for ship {}", placeholder.getPointerName(), this.modelName);
                 } else {
@@ -274,14 +277,14 @@ public class Ship {
     private void loadSprite(DataNode node) {
         if (node.tokens.size() < 2)
             return;
-        sprite = GameData.getSprite(node.token(1));
+        sprite = gameData.getSprite(node.token(1));
     }
 
     private void loadThumbnail(DataNode node) {
         if (node.tokens.size() < 2) {
             return;
         }
-        thumbnail = GameData.getSprite(node.token(1));
+        thumbnail = gameData.getSprite(node.token(1));
     }
 
     @Override

@@ -36,6 +36,7 @@ public class OutfitListPane extends ScrollPane {
 
         outfitList = new ArrayList<>();
         for (Outfit outfit : outfitListSource) {
+            if(outfit.getCategory() == Category.UNKNOWN) continue;
             FlowPane flowPane = categoryPanes.get(outfit.getCategory());
             OutfitListItem item = new OutfitListItem(outfit);
             outfitList.add(item);
