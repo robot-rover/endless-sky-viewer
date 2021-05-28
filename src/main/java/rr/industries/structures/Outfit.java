@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.max;
+
 /**
  * Class representing an outfit that can be installed in a ship. A ship's
  * "attributes" are simply stored as a series of key-value pairs, and an outfit
@@ -58,10 +60,32 @@ public class Outfit {
                 plural = child.token(1);
             } else if (key.equals("flare sprite") && size >= 2) {
                 //todo: sprites
+            } else if (key.equals("reverse flare sprite") && size >= 2) {
+                //todo: sprites
+            } else if (key.equals("steering flare sprite") && size >= 2) {
+                //todo: sprites
             } else if (key.equals("flare sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("reverse flare sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("steering flare sound") && size >= 2) {
                 //todo: sounds
             } else if (key.equals("afterburner effect") && size >= 2) {
                 //todo: effects
+            } else if (key.equals("jump effect") && size >= 2) {
+                //todo: effects
+            } else if (key.equals("hyperdrive sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("hyperdrive in sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("hyperdrive out sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("jump sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("jump in sound") && size >= 2) {
+                //todo: sounds
+            } else if (key.equals("jump out sound") && size >= 2) {
+                //todo: sounds
             } else if (key.equals("flotsam sprite") && size >= 2) {
                 //todo: sprites
             } else if (key.equals("thumbnail") && size >= 2) {
@@ -83,6 +107,8 @@ public class Outfit {
             } else if (key.equals("licenses")) {
                 for (DataNode grand : child.children)
                     licenses.add(grand.token(0));
+            } else if (key.equals("jump range") && size >= 2) {
+                attributes.put(key, max(0, child.value(1)));
             } else if (size >= 2) {
                 attributes.put(key, child.value(1));
             } else {
