@@ -146,7 +146,7 @@ public class GameData {
     public void loadGameData(Consumer<Double> progressCallback) throws IOException {
         if (!getGameDirectory().exists() || !gameDataDirectory.isDirectory()) {
             LOG.error("Game Directory {} is Not Valid!", getGameDirectory().getAbsolutePath());
-            System.exit(1);
+            throw new IOException("Game Data directory is not valid");
         }
         // Load Ship Sprites
         File baseSpriteDir = getGameDirectory("images");
