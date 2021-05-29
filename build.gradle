@@ -8,7 +8,7 @@ plugins {
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group 'rr.industries'
-version '0.0.4'
+version '0.0.5'
 
 repositories {
     mavenCentral()
