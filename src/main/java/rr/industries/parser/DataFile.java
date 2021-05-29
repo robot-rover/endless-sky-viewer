@@ -97,7 +97,7 @@ public class DataFile {
                 int start = i;
 
                 // Find the end of this token.
-                while (str[i] != '\n' && (isQuoted ? (str[i] != endQuote) : (str[i] != ' ')))
+                while (str[i] != '\n' && (isQuoted ? (str[i] != endQuote) : (str[i] > ' ')))
                     i++;
 
                 node.tokens.add(new String(str, start, i - start));
