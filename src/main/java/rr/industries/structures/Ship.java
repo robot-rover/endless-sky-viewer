@@ -24,22 +24,22 @@ public class Ship {
     private Image sprite;
     private Image thumbnail;
     private String variantName;
-    private Outfit baseAttributes;
-    private Outfit addAttributes;
+    public Outfit baseAttributes;
+    public Outfit addAttributes;
     private List<Outfit> outfits;
     private String description;
     private boolean neverDisabled;
     private boolean uncapturable;
     private String noun;
 
-    private double gunPorts;
-    private double turretPorts;
+    public double gunPorts;
+    public double turretPorts;
     private boolean redoHardpoints;
     private double droneBays;
     private double fighterBays;
     private boolean redoBays;
 
-    private GameData gameData;
+    private final GameData gameData;
 
     /**
      * Creates a new ship

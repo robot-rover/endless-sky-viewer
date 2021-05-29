@@ -22,7 +22,7 @@ import static java.lang.Math.max;
 public class Outfit {
     private String name;
     private double cost;
-    private double mass;
+    public double mass;
     private String ammo;
     private Image thumbnail;
     private String description;

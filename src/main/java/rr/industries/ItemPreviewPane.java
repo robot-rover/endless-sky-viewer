@@ -114,7 +114,7 @@ public abstract class ItemPreviewPane extends ScrollPane {
         setAttributes(attributeList, item.getAttributes().entrySet().iterator());
     }
 
-    protected static final DecimalFormat attributeFormat = new DecimalFormat("#.##");
+    protected static final DecimalFormat attributeFormat = new DecimalFormat("#,###.##");
 
     protected void setAttributes(VBox list, Iterator<Map.Entry<String, Double>> attributes) {
         setAttributes(list, attributes, false);
@@ -122,6 +122,9 @@ public abstract class ItemPreviewPane extends ScrollPane {
 
     protected void setAttributes(VBox list, Iterator<Map.Entry<String, Double>> attributes, boolean colorNegatives) {
         list.getChildren().clear();
+        Label attTitle = new Label("Attributes:");
+        attTitle.setFont(Font.font(16));
+        list.getChildren().add(attTitle);
         int shade = 0;
         while (attributes.hasNext()) {
             Map.Entry<String, Double> itemSource = attributes.next();
