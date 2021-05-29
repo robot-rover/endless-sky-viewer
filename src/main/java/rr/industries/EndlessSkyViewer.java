@@ -10,8 +10,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import net.harawata.appdirs.AppDirs;
@@ -39,8 +41,9 @@ import java.util.function.Consumer;
 public class EndlessSkyViewer extends Application {
 
     public static final String APP_NAME = "endless-sky-viewer";
-    public static final String APP_VERSION = "0.0.3";
+    public static final String APP_VERSION = "0.0.4";
     public static final String APP_AUTHOR = "robot_rover";
+    public static final String APP_GITHUB = "https://github.com/robot-rover/endless-sky-viewer";
 
     public static final Logger LOG = LoggerFactory.getLogger(EndlessSkyViewer.class);
 
@@ -93,6 +96,31 @@ public class EndlessSkyViewer extends Application {
         }
     }
 
+    public void showAboutDialog() {
+        VBox dialogRoot = new VBox();
+        dialogRoot.setPadding(new Insets(20));
+        dialogRoot.setSpacing(2);
+        Scene dialogScene = new Scene(dialogRoot);
+        dialogScene.getStylesheets().add(stylesheet);
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(dialogScene);
+        dialogStage.setTitle("About endless-sky-viewer");
+
+        Label name = new Label("endless-sky-viewer");
+        name.setFont(Font.font(22));
+        dialogRoot.getChildren().add(name);
+        Label version = new Label(APP_VERSION);
+        dialogRoot.getChildren().add(version);
+        Label author = new Label("By: Sam O'Brien (" + APP_AUTHOR + ")");
+        dialogRoot.getChildren().add(author);
+        Label github = new Label(APP_GITHUB);
+        github.setOnMouseClicked((MouseEvent me) -> getHostServices().showDocument(APP_GITHUB));
+        github.setUnderline(true);
+        dialogRoot.getChildren().add(github);
+
+        dialogStage.show();
+    }
+
     @Override
     public void start(Stage primaryStage) {
         root = new BorderPane();
@@ -134,7 +162,9 @@ public class EndlessSkyViewer extends Application {
 
         Menu helpMenu = new Menu("Help");
         MenuItem about = new MenuItem("About");
+        about.setOnAction((ActionEvent ae) -> showAboutDialog());
         MenuItem updates = new MenuItem("Check for Updates");
+        updates.setOnAction((ActionEvent ae) -> getHostServices().showDocument(APP_GITHUB + "/releases"));
         helpMenu.getItems().addAll(about, updates);
 
         menuBar.getMenus().addAll(fileMenu, shipMenu, helpMenu);
