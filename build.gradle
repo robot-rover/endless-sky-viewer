@@ -55,6 +55,20 @@ jlink {
     }
 }
 
+tasks.register('zipJPackage', Zip) {
+    dependsOn jpackage
+    destinationDir = project.file(project.buildDir.path + '/jpackage')
+    String osName = (project.isWindows ? 'win' : 'linux')
+    archiveFileName = 'endless-sky-viewer-' + project.version + '-' + osName + '.zip'
+
+    from project.buildDir.path + '/jpackage/endless-sky-viewer'
+}
+
+build {
+    dependsOn jpackage
+    dependsOn zipJPackage
+}
+
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
