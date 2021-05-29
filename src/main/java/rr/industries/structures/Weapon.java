@@ -231,7 +231,7 @@ public class Weapon {
     public static final int ION_DAMAGE = 4;
     public static final int DISRUPTION_DAMAGE = 5;
     public static final int SLOWING_DAMAGE = 6;
-    private double[] damage = new double[DAMAGE_TYPES];
+    private final double[] damage = new double[DAMAGE_TYPES];
 
     public double getReload() {
         return reload;

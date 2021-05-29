@@ -23,9 +23,9 @@ class ShipListItem extends ListItem {
         return variants;
     }
 
-    private Ship baseShip;
-    private List<Ship> variants;
-    private boolean applyOutfits;
+    private final Ship baseShip;
+    private final List<Ship> variants;
+    private final boolean applyOutfits;
     Consumer<ShipListItem> clickedOnCallback;
 
     ShipListItem(Ship ship, GameData gameData, boolean isVariant, boolean applyOutfits) {

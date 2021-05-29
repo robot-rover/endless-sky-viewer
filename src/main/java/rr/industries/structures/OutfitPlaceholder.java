@@ -9,7 +9,7 @@ import rr.industries.parser.DataNode;
  * with actual outfits during Ship#finalLoad()
  */
 public class OutfitPlaceholder extends Outfit {
-    private String pointerName;
+    private final String pointerName;
 
     public OutfitPlaceholder(String pointerName, GameData gameData) {
         super(new DataNode(), gameData);

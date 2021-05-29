@@ -80,7 +80,7 @@ public class DataNode {
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < indent; i++)
             line.append(" ");
-        line.append(toString()).append("\n");
+        line.append(this).append("\n");
         for (DataNode child : children) {
             line.append(child.printPreview(indent + 2));
         }
@@ -130,7 +130,7 @@ public class DataNode {
         public String toString() {
             StringBuilder space = new StringBuilder();
             for (int i = 0; i < indent; i++) space.append(" ");
-            return (stackRef == null ? "" : stackRef + "\n") + space.toString() + element;
+            return (stackRef == null ? "" : stackRef + "\n") + space + element;
         }
     }
 

@@ -34,8 +34,8 @@ public class OutfitListItem extends ListItem {
         return outfit.getDescription();
     }
 
-    private Outfit outfit;
-    private Image outfitThumbnail;
+    private final Outfit outfit;
+    private final Image outfitThumbnail;
     Consumer<OutfitListItem> clickedOnCallback;
 
     public OutfitListItem(Outfit outfit) {
