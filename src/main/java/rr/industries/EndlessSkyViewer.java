@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 public class EndlessSkyViewer extends Application {
 
     public static final String APP_NAME = "endless-sky-viewer";
-    public static final String APP_VERSION = "0.0.5";
+    public static final String APP_VERSION = "0.0.6";
     public static final String APP_AUTHOR = "robot_rover";
     public static final String APP_GITHUB = "https://github.com/robot-rover/endless-sky-viewer";
 
