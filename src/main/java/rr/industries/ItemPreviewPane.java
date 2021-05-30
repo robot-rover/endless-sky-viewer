@@ -122,6 +122,7 @@ public abstract class ItemPreviewPane extends ScrollPane {
 
     protected void setAttributes(VBox list, Iterator<Map.Entry<String, Double>> attributes, boolean colorNegatives) {
         list.getChildren().clear();
+        boolean anyWarn = false;
         Label attTitle = new Label("Attributes:");
         attTitle.setFont(Font.font(16));
         list.getChildren().add(attTitle);
@@ -140,9 +141,15 @@ public abstract class ItemPreviewPane extends ScrollPane {
             HBox.setHgrow(spacer, Priority.ALWAYS);
             if ((1 & shade++) == 0)
                 item.setId("manifest-shade");
-            if (negative && colorNegatives)
+            if (negative && colorNegatives) {
+                anyWarn = true;
                 item.setId("manifest-warn");
+            }
             list.getChildren().add(item);
+        }
+
+        if (anyWarn) {
+            attTitle.setId("manifest-warn");
         }
     }
 }

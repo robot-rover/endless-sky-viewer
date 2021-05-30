@@ -96,8 +96,14 @@ public class ShipPreviewPane extends ItemPreviewPane {
 
         stats.getChildren().clear();
         int shade = 0;
-        stats.getChildren().add(createStatEntry("Shields Charge / Max", attributes.getOrDefault("shield generation", 0.0), attributes.getOrDefault("shields", 0.0), shade++ % 2 == 0, false));
-        stats.getChildren().add(createStatEntry("Hull", attributes.getOrDefault("hull", 0.0), shade++ % 2 == 0, false));
+        double shieldGeneration = attributes.getOrDefault("shield generation", 0.0) * (1. + attributes.getOrDefault("shield generation multiplier", 0.0));
+        stats.getChildren().add(createStatEntry("Shields Charge / Max", shieldGeneration * 60, attributes.getOrDefault("shields", 0.0), shade++ % 2 == 0, false));
+        double hullGeneration = attributes.getOrDefault("hull repair rate", 0.0) * (1. + attributes.getOrDefault("hull repair multiplier", 0.0));
+        if (hullGeneration == 0) {
+            stats.getChildren().add(createStatEntry("Hull", attributes.getOrDefault("hull", 0.0), shade++ % 2 == 0, false));
+        } else {
+            stats.getChildren().add(createStatEntry("Hull Repair / Max", hullGeneration * 60, attributes.getOrDefault("hull", 0.0), shade++ % 2 == 0, false));
+        }
         double mass = ship.getBaseShip().addAttributes.mass;
         stats.getChildren().add(createStatEntry("Mass w/o Cargo", mass, shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("Cargo Space", attributes.getOrDefault("cargo space", 0.0), shade++ % 2 == 0, false));
@@ -106,17 +112,17 @@ public class ShipPreviewPane extends ItemPreviewPane {
         double thrust = attributes.getOrDefault("thrust", 0.0);
         double drag = attributes.getOrDefault("drag", 0.0);
         double turn = attributes.getOrDefault("turn", 0.0);
-        String speed = drag == 0 ? "<inf>" : attributeFormat.format(thrust / drag);
-        String acceleration = mass == 0 ? "<inf>" : attributeFormat.format(thrust / mass);
-        String turnRate = mass == 0 ? "<inf>" : attributeFormat.format(turn / mass);
+        String speed = drag == 0 ? "<inf>" : attributeFormat.format(thrust / drag * 60.);
+        String acceleration = mass == 0 ? "<inf>" : attributeFormat.format(thrust / mass * 3600.);
+        String turnRate = mass == 0 ? "<inf>" : attributeFormat.format(turn / mass * 60.);
         stats.getChildren().add(createStatEntry("Max Speed", speed, shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("Acceleration", acceleration, shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("Turning", turnRate, shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("Outfit Space", attributes.getOrDefault("outfit space", 0.0), ship.getBaseShip().getAttributes().getOrDefault("outfit space", 0.0), shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("Weapon Capacity", attributes.getOrDefault("weapon capacity", 0.0), ship.getBaseShip().getAttributes().getOrDefault("weapon capacity", 0.0), shade++ % 2 == 0, false));
-        stats.getChildren().add(createStatEntry("Outfit Space", attributes.getOrDefault("engine capacity", 0.0), ship.getBaseShip().getAttributes().getOrDefault("engine capacity", 0.0), shade++ % 2 == 0, false));
-        stats.getChildren().add(createStatEntry("Gun Ports", ship.getBaseShip().gunPorts, shade++ % 2 == 0, false));
-        stats.getChildren().add(createStatEntry("Turret Mounts", ship.getBaseShip().turretPorts, shade++ % 2 == 0, false));
+        stats.getChildren().add(createStatEntry("Engine Capacity", attributes.getOrDefault("engine capacity", 0.0), ship.getBaseShip().getAttributes().getOrDefault("engine capacity", 0.0), shade++ % 2 == 0, false));
+        stats.getChildren().add(createStatEntry("Gun Ports", attributes.getOrDefault("gun ports", 0.0), ship.getBaseShip().getAttributes().getOrDefault("gun ports", 0.0), shade++ % 2 == 0, false));
+        stats.getChildren().add(createStatEntry("Turret Mounts", attributes.getOrDefault("turret mounts", 0.0), ship.getBaseShip().getAttributes().getOrDefault("turret mounts", 0.0), shade++ % 2 == 0, false));
         stats.getChildren().add(createStatEntry("", "Energy / Heat", shade++ % 2 == 0, false));
         double idleEnergy = attributes.getOrDefault("energy generation", 0.0)
                 + attributes.getOrDefault("solar collection", 0.0)
@@ -129,9 +135,9 @@ public class ShipPreviewPane extends ItemPreviewPane {
                 + attributes.getOrDefault("solar heat", 0.0)
                 + attributes.getOrDefault("fuel heat", 0.0)
                 - coolingEfficiency * (
-                        attributes.getOrDefault("cooling", 0.0)
+                attributes.getOrDefault("cooling", 0.0)
                         + attributes.getOrDefault("active cooling", 0.0)
-                );
+        );
         stats.getChildren().add(createStatEntry("Idle", idleEnergy * 60, idleHeat * 60, shade++ % 2 == 0, false));
         double movingEnergy = attributes.getOrDefault("thrusting energy", 0.0)
                 + attributes.getOrDefault("turning energy", 0.0)
@@ -143,10 +149,27 @@ public class ShipPreviewPane extends ItemPreviewPane {
         double firingEnergy = ship.getBaseShip().getOutfits().stream().map(Outfit::getWeapon).filter(weapon -> weapon != null && weapon.getReload() > 0).mapToDouble(weapon -> weapon.getFiringEnergy() / weapon.getReload()).sum();
         double firingHeat = ship.getBaseShip().getOutfits().stream().map(Outfit::getWeapon).filter(weapon -> weapon != null && weapon.getReload() > 0).mapToDouble(weapon -> weapon.getFiringHeat() / weapon.getReload()).sum();
         stats.getChildren().add(createStatEntry("Firing", firingEnergy * 60, firingHeat * 60, shade++ % 2 == 0, false));
+        double shieldEnergy = attributes.getOrDefault("shield energy", 0.0) * (1. + attributes.getOrDefault("shield energy multiplier", 0.0));
+        double hullEnergy = attributes.getOrDefault("hull energy", 0.0) * (1. + attributes.getOrDefault("hull energy multiplier", 0.0));
+        double combinedEnergy = shieldEnergy + hullEnergy;
+        double shieldHeat = attributes.getOrDefault("shield heat", 0.0) * (1. + attributes.getOrDefault("shield heat multiplier", 0.0));
+        double hullHeat = attributes.getOrDefault("hull heat", 0.0) * (1. + attributes.getOrDefault("hull heat multiplier", 0.0));
+        double combinedHeat = shieldHeat + hullHeat;
+        boolean showShields = shieldEnergy != 0 || shieldHeat != 0;
+        boolean showHull = hullEnergy != 0 || hullHeat != 0;
+        String label;
+        if (showShields && showHull) {
+            label = "Shields + Heat";
+        } else if (!showShields && showHull) {
+            label = "Hull Repair";
+        } else {
+            label = "Shield Generation";
+        }
+        stats.getChildren().add(createStatEntry(label, combinedEnergy * 60., combinedHeat * 60., shade++ % 2 == 0, false));
         double maxEnergy = attributes.getOrDefault("energy capacity", 0.0);
         double MAXIMUM_TEMPERATURE = 100.;
         double maxHeat = 60 * (mass * MAXIMUM_TEMPERATURE) * (0.001 * attributes.getOrDefault("heat dissipation", 0.0));
-        stats.getChildren().add(createStatEntry("Maximum", maxEnergy * 60, maxHeat * 60, shade++ % 2 == 0, false));
+        stats.getChildren().add(createStatEntry("Maximum", maxEnergy, maxHeat, shade++ % 2 == 0, false));
 
     }
 

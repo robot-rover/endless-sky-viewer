@@ -32,8 +32,8 @@ public class Ship {
     private boolean uncapturable;
     private String noun;
 
-    public double gunPorts;
-    public double turretPorts;
+    private double gunPorts;
+    private double turretPorts;
     private boolean redoHardpoints;
     private double droneBays;
     private double fighterBays;
